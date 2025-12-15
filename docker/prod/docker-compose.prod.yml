@@ -1,0 +1,40 @@
+services:
+  app:
+    build:
+      context: ../..
+      dockerfile: docker/prod/Dockerfile.prod
+    container_name: app-prod
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+        PORT: 8000
+        ORIGINS: ""
+        NODE_ENV: "production"
+        DATABASE_URL_PROD: postgresql://user:veryStrongPassword@db:5432/prod-db
+        DATABASE_URL_TEST: postgresql://user:veryStrongPassword@db:5432/prod-db
+        DATABASE_URL_DEV: postgresql://user:veryStrongPassword@db:5432/prod-db
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    container_name: postgres-prod-db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: veryStrongPassword
+      POSTGRES_DB: prod-db
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d prod-db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_prod_data:
