@@ -3,19 +3,44 @@ services:
     build:
       context: ../..
       dockerfile: docker/prod/Dockerfile.prod
+      args:
+        DATABASE_URL_PROD: postgresql://user:veryStrongPassword@db:5432/prod-db
+        DATABASE_URL_TEST: postgresql://user:veryStrongPassword@db:5432/prod-db
+        DATABASE_URL_DEV: postgresql://user:veryStrongPassword@db:5432/prod-db
+        NODE_ENV: production
+        PORT: "8000"
+        ORIGINS: ""
+        OTP_TTL_SECONDS: "120"
+        REGISTER_TOKEN_TTL_SECONDS: "900"
+        JWT_SECRET: "somesecret"
+        JWT_EXPIRY_TIME: "3600000"
+        OTP_EMAIL: "otpexpress206@gmail.com"
+        OTP_EMAIL_PASS: "qbml ladd cwnw pbzm"
+        REDIS_URL: "redis://redis:6379"
     container_name: app-prod
     ports:
       - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - ../../.env
     environment:
-        PORT: 8000
-        ORIGINS: ""
-        NODE_ENV: "production"
-        DATABASE_URL_PROD: postgresql://user:veryStrongPassword@db:5432/prod-db
-        DATABASE_URL_TEST: postgresql://user:veryStrongPassword@db:5432/prod-db
-        DATABASE_URL_DEV: postgresql://user:veryStrongPassword@db:5432/prod-db
+      PORT: 8000
+      ORIGINS: ""
+      NODE_ENV: "development"
+      DATABASE_URL_PROD: postgresql://user:veryStrongPassword@db:5432/prod-db
+      DATABASE_URL_TEST: postgresql://user:veryStrongPassword@db:5432/prod-db
+      DATABASE_URL_DEV: postgresql://user:veryStrongPassword@db:5432/prod-db
+      OTP_TTL_SECONDS: 120
+      REGISTER_TOKEN_TTL_SECONDS: 900
+      JWT_SECRET: "somesecret"
+      JWT_EXPIRY_TIME: 3600000
+      OTP_EMAIL: "otpexpress206@gmail.com"
+      OTP_EMAIL_PASS: "qbml ladd cwnw pbzm"
+      REDIS_URL: "REDIS_URL=redis://redis:6379"
     restart: unless-stopped
 
   db:
@@ -35,6 +60,15 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
 volumes:
   postgres_prod_data:

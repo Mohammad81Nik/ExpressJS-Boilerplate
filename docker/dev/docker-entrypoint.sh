@@ -11,6 +11,7 @@ echo "✅ Database is ready"
 
 
 echo "🚀 Generating prisma client..."
+npx npx prisma migrate reset --force
 npx prisma generate
 
 echo "🚀 Running Prisma migrations..."
