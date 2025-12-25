@@ -1,0 +1,80 @@
+{
+  "name": "backend-boilerplate",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "lint-staged": {
+    "*.{ts,js,json,md}": [
+      "prettier --write"
+    ],
+    "*.ts": [
+      "eslint --fix"
+    ]
+  },
+  "scripts": {
+    "start": "node dist/server.js",
+    "dev": "vite-node --watch src/server.ts",
+    "generate": "node scripts/generate.js",
+    "build": "tsc",
+    "prepare": "husky",
+    "lint": "eslint . --ext .ts,.js,.mts,.cts",
+    "lint:fix": "eslint . --ext .ts,.js,.mts,.cts --fix",
+    "lint-staged": "lint-staged",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "deploy": "prisma migrate deploy",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@bull-board/api": "^6.15.0",
+    "@bull-board/express": "^6.15.0",
+    "@prisma/adapter-pg": "^7.1.0",
+    "@prisma/client": "^7.1.0",
+    "bcrypt": "^6.0.0",
+    "bullmq": "^5.66.1",
+    "cors": "^2.8.5",
+    "custom-logger-middleware": "^1.0.15",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "ioredis": "^5.8.2",
+    "jose": "^6.1.3",
+    "nodemailer": "^7.0.11",
+    "pg": "^8.16.3",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/cors": "^2.8.19",
+    "@types/dotenv": "^6.1.1",
+    "@types/express": "^5.0.5",
+    "@types/ioredis": "^4.28.10",
+    "@types/node": "^24.10.1",
+    "@types/nodemailer": "^7.0.4",
+    "@types/pg": "^8.15.6",
+    "@types/supertest": "^6.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.48.0",
+    "@typescript-eslint/parser": "^8.48.0",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "globals": "^16.5.0",
+    "husky": "^9.1.7",
+    "jiti": "^2.6.1",
+    "lint-staged": "^16.2.7",
+    "nodemon": "^3.1.11",
+    "prettier": "^3.7.2",
+    "prisma": "^7.1.0",
+    "supertest": "^7.1.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.48.0",
+    "vite-node": "^5.2.0",
+    "vitest": "^4.0.14"
+  }
+}

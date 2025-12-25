@@ -1,0 +1,22 @@
+# git
+.git
+.gitignore
+
+# log
+logs
+*.log
+
+# husky
+.husky
+
+# scripts
+scripts
+
+# prisma
+generated
+
+# node modules
+node_modules
+
+# .env variables
+*.env
