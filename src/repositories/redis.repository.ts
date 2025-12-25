@@ -1,7 +1,6 @@
 import { config } from '../config/env.config.js';
 import { redisClient } from '../infrastructure/redis/redis.client.js';
 import { REDIS_PREFIXES } from '../infrastructure/redis/redis.prefixes.js';
-import { IJWTPayload } from '../types/utils/jwt.js';
 import { BadRequestError } from '../utils/errors.js';
 import { redisUtis } from '../utils/redis.js';
 

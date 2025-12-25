@@ -10,15 +10,12 @@ import { UnauthorizedError } from '../utils/errors.js';
 import { jwtUtils } from '../utils/jwt.js';
 import { SendOtpDTO, VerifyOtpDTO } from '../validation/otp.schema.js';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 
 export const otpService = {
   async createOTP(data: SendOtpDTO) {
     const { email } = data.body;
 
     const cachedData = await redisOtpRepository.exists(email);
-
-    console.log(cachedData);
 
     if (!cachedData) {
       await otpQueue.add('register-otp', { email });
@@ -53,12 +50,8 @@ export const otpService = {
     const currentUser = await userRepository.getByEmail(email);
 
     if (!currentUser) {
-      const temp_token = jwt.sign(
+      const temp_token = await jwtUtils.sign(
         jwtUtils.generatePayload({ scope: ['register'], data: { email } }),
-        config.JWT_SECRET,
-        {
-          expiresIn: config.JWT_EXPIRY_TIME,
-        },
       );
 
       await redisTempRegisterToken.save(email);
@@ -66,15 +59,11 @@ export const otpService = {
       return { temp_token };
     }
 
-    const token = jwt.sign(
+    const token = await jwtUtils.sign(
       jwtUtils.generatePayload({
         scope: ['access'],
         data: currentUser,
       }),
-      config.JWT_SECRET,
-      {
-        expiresIn: config.JWT_EXPIRY_TIME,
-      },
     );
 
     return { token };

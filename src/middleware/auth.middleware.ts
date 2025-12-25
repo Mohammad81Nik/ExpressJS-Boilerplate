@@ -1,10 +1,11 @@
 import { RequestHandler } from 'express';
 import { ForbiddenError, UnauthorizedError } from '../utils/errors.js';
 import { IJWTPayload, TTokenScopes } from '../types/utils/jwt.js';
-import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import { config } from '../config/env.config.js';
-import { User } from '../../generated/prisma/client.js';
 import { redisTempRegisterToken } from '../repositories/redis.repository.js';
+import { User } from '../generated/prisma/client.js';
+import { jwtVerify } from 'jose';
+import { JWTInvalid, JWTExpired } from 'jose/errors';
 
 const setToken: (key: 'temp_token' | 'token') => RequestHandler =
   (key) => (req, _res, next) => {
@@ -28,20 +29,20 @@ const validateToken: (scope: TTokenScopes) => RequestHandler =
     }
 
     try {
-      const jwtPayload = jwt.verify(token, config.JWT_SECRET, { complete: true });
+      const { payload } = await jwtVerify<IJWTPayload>(token, config.JWT_SECRET, {
+        issuer: 'my-app',
+      });
 
-      const rawPayload = jwtPayload.payload as IJWTPayload;
-
-      if (!rawPayload.scope.includes(scope)) {
+      if (!payload.scope.includes(scope)) {
         throw new ForbiddenError('Forbidden');
       }
 
-      if (rawPayload.scope.includes('access')) {
-        req.user = rawPayload.data as User;
+      if (payload.scope.includes('access')) {
+        req.user = payload.data as User;
       }
 
-      if (rawPayload.scope.includes('register')) {
-        const email = rawPayload.data.email as string;
+      if (payload.scope.includes('register')) {
+        const email = payload.data.email as string;
 
         const isValid = await redisTempRegisterToken.exists(email);
 
@@ -56,7 +57,7 @@ const validateToken: (scope: TTokenScopes) => RequestHandler =
 
       next();
     } catch (err) {
-      if (err instanceof JsonWebTokenError) {
+      if (err instanceof JWTInvalid || err instanceof JWTExpired) {
         throw new UnauthorizedError('Unauthorized');
       }
 

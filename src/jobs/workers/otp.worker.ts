@@ -10,18 +10,15 @@ import { dateUtils } from '../../utils/date.js';
 const worker = new Worker<{ email: string }>(
   'otp-queue',
   async (job) => {
-    console.log('job: ', job);
     const code = generateOTP();
 
     const hashedCode = await bcrypt.hash(code, 10);
 
-    const ok = await redisOtpRepository.save(job.data.email, {
+    await redisOtpRepository.save(job.data.email, {
       code,
       hashedCode,
       expires_at: new Date(dateUtils.getTime() + config.OTP_TTL_MILLISECONDS),
     });
-
-    console.log('redis in job: ', ok);
 
     await transport.sendMail({
       to: job.data.email,

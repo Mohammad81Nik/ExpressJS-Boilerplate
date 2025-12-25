@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { output } from 'zod';
-import { User } from '../../../generated/prisma/client.ts';
+import { User } from '../../generated/prisma/client.ts';
 
 declare global {
   namespace Express {

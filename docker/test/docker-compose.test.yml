@@ -5,7 +5,7 @@ services:
       dockerfile: docker/test/Dockerfile.test
     container_name: app-test
     ports:
-      - "8000:8000"
+      - '8000:8000'
     depends_on:
       db:
         condition: service_healthy
@@ -13,24 +13,24 @@ services:
         condition: service_healthy
     environment:
       PORT: 8000
-      ORIGINS: ""
-      NODE_ENV: "development"
+      ORIGINS: ''
+      NODE_ENV: 'development'
       DATABASE_URL_PROD: postgresql://user:veryStrongPassword@db:5432/test-db
       DATABASE_URL_TEST: postgresql://user:veryStrongPassword@db:5432/test-db
       DATABASE_URL_DEV: postgresql://user:veryStrongPassword@db:5432/test-db
       OTP_TTL_SECONDS: 120
       REGISTER_TOKEN_TTL_SECONDS: 900
-      JWT_SECRET: "somesecret"
+      JWT_SECRET: 'somesecret'
       JWT_EXPIRY_TIME: 3600000
-      OTP_EMAIL: "otpexpress206@gmail.com"
-      OTP_EMAIL_PASS: "qbml ladd cwnw pbzm"
-      REDIS_URL: "REDIS_URL=redis://redis:6379"
+      OTP_EMAIL: 'otpexpress206@gmail.com'
+      OTP_EMAIL_PASS: 'qbml ladd cwnw pbzm'
+      REDIS_URL: 'REDIS_URL=redis://redis:6379'
 
   db:
     image: postgres:16-alpine
     container_name: postgres-test-db
     ports:
-      - "5433:5432"
+      - '5433:5432'
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: veryStrongPassword
@@ -38,16 +38,16 @@ services:
     volumes:
       - postgres_test_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d test-db"]
+      test: ['CMD-SHELL', 'pg_isready -U user -d test-db']
       interval: 5s
       timeout: 5s
       retries: 5
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       timeout: 3s
       retries: 5

@@ -2,6 +2,8 @@ FROM node:24-alpine
 
 WORKDIR /app-dev
 
+RUN apk add --no-cache redis
+
 COPY package*.json .
 COPY tsconfig.json .
 

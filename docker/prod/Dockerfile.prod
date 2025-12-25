@@ -35,7 +35,6 @@ ENV REDIS_URL=$REDIS_URL
 COPY package*.json ./
 COPY tsconfig.json ./
 COPY prisma ./prisma
-COPY prisma.config.ts ./
 
 RUN npm install --omit=optional
 
@@ -48,10 +47,11 @@ FROM node:24-alpine AS runner
 
 WORKDIR /app-prod
 
+RUN apk add --no-cache redis
+
 COPY --from=builder /app-prod/dist ./dist
 COPY --from=builder /app-prod/node_modules ./node_modules
 COPY --from=builder /app-prod/prisma ./prisma
-COPY --from=builder /app-prod/prisma.config.ts ./
 COPY docker/prod/docker-entrypoint.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
@@ -61,4 +61,4 @@ ENV NODE_ENV=production
 EXPOSE 8000
 
 ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["node", "dist/src/server.js"]
+CMD ["node", "dist/server.js"]

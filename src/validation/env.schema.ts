@@ -20,7 +20,7 @@ export const envSchema = z
       .default(15 * 60),
 
     // jwt
-    JWT_SECRET: z.string(),
+    JWT_SECRET: z.string().transform((data) => new TextEncoder().encode(data)),
     JWT_EXPIRY_TIME: z.coerce.number().int(),
 
     // nodemailer

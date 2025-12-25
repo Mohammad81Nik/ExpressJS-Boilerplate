@@ -1,10 +1,9 @@
-import { config } from '../config/env.config.js';
 import { userRepository } from '../repositories/user.repository.js';
 import { UnauthorizedError } from '../utils/errors.js';
 import { jwtUtils } from '../utils/jwt.js';
 import { SendOtpDTO, VerifyOtpDTO } from '../validation/otp.schema.js';
 import { otpService } from './otp.service.js';
-import jwt, { JsonWebTokenError } from 'jsonwebtoken';
+import { JWTExpired, JWTInvalid } from 'jose/errors';
 
 export const authService = {
   async sendOTP(data: SendOtpDTO) {
@@ -25,17 +24,13 @@ export const authService = {
     try {
       const newUser = await userRepository.create({ name, email });
 
-      const token = jwt.sign(
+      const token = await jwtUtils.sign(
         jwtUtils.generatePayload({ scope: ['access'], data: newUser }),
-        config.JWT_SECRET,
-        {
-          expiresIn: config.JWT_EXPIRY_TIME,
-        },
       );
 
       return token;
     } catch (err) {
-      if (err instanceof JsonWebTokenError) {
+      if (err instanceof JWTExpired || err instanceof JWTInvalid) {
         throw new UnauthorizedError('Invalid token');
       }
       throw err;
